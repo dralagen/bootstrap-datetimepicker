@@ -222,63 +222,12 @@ THE SOFTWARE.
             else {
                 eData = picker.element.find('input').data();
             }
-            if (eData.dateFormat !== undefined) {
-                picker.options.format = eData.dateFormat;
-            }
-            if (eData.datePickdate !== undefined) {
-                picker.options.pickDate = eData.datePickdate;
-            }
-            if (eData.datePicktime !== undefined) {
-                picker.options.pickTime = eData.datePicktime;
-            }
-            if (eData.dateUseminutes !== undefined) {
-                picker.options.useMinutes = eData.dateUseminutes;
-            }
-            if (eData.dateUseseconds !== undefined) {
-                picker.options.useSeconds = eData.dateUseseconds;
-            }
-            if (eData.dateUsecurrent !== undefined) {
-                picker.options.useCurrent = eData.dateUsecurrent;
-            }
-            if (eData.dateMinutestepping !== undefined) {
-                picker.options.minuteStepping = eData.dateMinutestepping;
-            }
-            if (eData.dateMindate !== undefined) {
-                picker.options.minDate = eData.dateMindate;
-            }
-            if (eData.dateMaxdate !== undefined) {
-                picker.options.maxDate = eData.dateMaxdate;
-            }
-            if (eData.dateShowtoday !== undefined) {
-                picker.options.showToday = eData.dateShowtoday;
-            }
-            if (eData.dateCollapse !== undefined) {
-                picker.options.collapse = eData.dateCollapse;
-            }
-            if (eData.dateLanguage !== undefined) {
-                picker.options.language = eData.dateLanguage;
-            }
-            if (eData.dateDefaultdate !== undefined) {
-                picker.options.defaultDate = eData.dateDefaultdate;
-            }
-            if (eData.dateDisableddates !== undefined) {
-                picker.options.disabledDates = eData.dateDisableddates;
-            }
-            if (eData.dateEnableddates !== undefined) {
-                picker.options.enabledDates = eData.dateEnableddates;
-            }
-            if (eData.dateIcons !== undefined) {
-                picker.options.icons = eData.dateIcons;
-            }
-            if (eData.dateUsestrict !== undefined) {
-                picker.options.useStrict = eData.dateUsestrict;
-            }
-            if (eData.dateDirection !== undefined) {
-                picker.options.direction = eData.dateDirection;
-            }
-            if (eData.dateSidebyside !== undefined) {
-                picker.options.sideBySide = eData.dateSidebyside;
-            }
+            $.each(defaults, function (key) {
+                var attributeName = 'date' + key.charAt(0).toUpperCase() + key.slice(1);
+                if (eData[attributeName] !== undefined) {
+                    picker.options[key] = eData[attributeName];
+                }
+            });
         },
 
         place = function () {
@@ -485,10 +434,10 @@ THE SOFTWARE.
             if (currentYear === year) {
                 months.eq(picker.date.month()).addClass('active');
             }
-            if (currentYear - 1 < startYear) {
+            if (year - 1 < startYear) {
                 picker.widget.find('.datepicker-months th:eq(0)').addClass('disabled');
             }
-            if (currentYear + 1 > endYear) {
+            if (year + 1 > endYear) {
                 picker.widget.find('.datepicker-months th:eq(2)').addClass('disabled');
             }
             for (i = 0; i < 12; i++) {
@@ -748,8 +697,16 @@ THE SOFTWARE.
 
             selectHour: function (e) {
                 var hour = parseInt($(e.target).text(), 10);
-                if (picker.date.hours() > 12) {
-                    hour += 12;
+                if (!picker.use24hours) {
+                    if (picker.date.hours() >= 12) {
+                        if (hour !== 12) {
+                            hour += 12;
+                        }
+                    } else {
+                        if (hour === 12) {
+                            hour = 0;
+                        }
+                    }
                 }
                 picker.date.hours(hour);
                 actions.showPicker.call(picker);
@@ -853,6 +810,7 @@ THE SOFTWARE.
                 }, 'input');
                 if (picker.component) {
                     picker.component.on('click', $.proxy(picker.show, this));
+                    picker.component.on('mousedown', $.proxy(stopEvent, this));
                 } else {
                     picker.element.on('click', $.proxy(picker.show, this));
                 }
@@ -886,6 +844,7 @@ THE SOFTWARE.
                 }, 'input');
                 if (picker.component) {
                     picker.component.off('click', picker.show);
+                    picker.component.off('mousedown', picker.stopEvent);
                 } else {
                     picker.element.off('click', picker.show);
                 }
@@ -1226,6 +1185,8 @@ THE SOFTWARE.
             }
             if (!pMoment.isMoment(newDate)) {
                 newDate = (newDate instanceof Date) ? pMoment(newDate) : pMoment(newDate, picker.format, picker.options.useStrict);
+            } else {
+                newDate = newDate.locale(picker.options.language);
             }
             if (newDate.isValid()) {
                 picker.date = newDate;
@@ -1311,6 +1272,7 @@ THE SOFTWARE.
     };
 
     $.fn.datetimepicker.defaults = {
+        format: false,
         pickDate: true,
         pickTime: true,
         useMinutes: true,
@@ -1329,7 +1291,7 @@ THE SOFTWARE.
         useStrict: false,
         direction: 'auto',
         sideBySide: false,
-        daysOfWeekDisabled: false,
+        daysOfWeekDisabled: [],
         widgetParent: false
     };
 }));
