@@ -1,8 +1,8 @@
 /*
-//! version : 3.0.2
+//! version : 3.0.4
 =========================================================
 bootstrap-datetimepicker.js
-https://github.com/Eonasdan/bootstrap-datetimepicker
+https://github.com/dralagen/bootstrap-datetimepicker
 =========================================================
 The MIT License (MIT)
 
@@ -748,7 +748,12 @@ THE SOFTWARE.
 
         change = function (e) {
             pMoment.locale(picker.options.language);
-            var input = $(e.target), oldDate = pMoment(picker.date), newDate = pMoment(input.val(), picker.format, picker.options.useStrict);
+            var input = $(e.target),
+                oldDate = pMoment(picker.date),
+                newDate = pMoment(input.val(),
+                picker.format,
+                picker.options.useStrict);
+
             if (newDate.isValid() && !isInDisableDates(newDate) && isInEnableDates(newDate)) {
                 update();
                 picker.setValue(newDate);
@@ -806,9 +811,18 @@ THE SOFTWARE.
                     'blur': $.proxy(picker.hide, this)
                 });
             } else {
-                picker.element.on({
-                    'change': $.proxy(change, this)
-                }, 'input');
+                if (picker.options.showPickOnFocus) {
+                    picker.element.on({
+                        'focus': $.proxy(picker.show, this),
+                        'change': $.proxy(change, this),
+                        'blur': $.proxy(picker.hide, this)
+                    }, 'input');
+                } else {
+                    picker.element.on({
+                        'change': $.proxy(change, this)
+                    }, 'input');
+                }
+
                 if (picker.component) {
                     picker.component.on('click', $.proxy(picker.show, this));
                     picker.component.on('mousedown', $.proxy(stopEvent, this));
@@ -831,6 +845,7 @@ THE SOFTWARE.
             picker.widget.off('click', '.datepicker *', picker.click);
             picker.widget.off('click', '[data-action]');
             picker.widget.off('mousedown', picker.stopEvent);
+            picker.element.off('keydown', $.proxy(keydown, this));
             if (picker.options.pickDate && picker.options.pickTime) {
                 picker.widget.off('click.togglePicker');
             }
@@ -842,9 +857,17 @@ THE SOFTWARE.
                     'blur' : picker.hide
                 });
             } else {
-                picker.element.off({
-                    'change': picker.change
-                }, 'input');
+                if (picker.options.showPickOnFocus) {
+                    picker.element.off({
+                        'focus': $.proxy(picker.show, this),
+                        'change': $.proxy(change, this),
+                        'blur': $.proxy(picker.hide, this)
+                    }, 'input');
+                } else {
+                    picker.element.off({
+                        'change': $.proxy(change, this)
+                    }, 'input');
+                }
                 if (picker.component) {
                     picker.component.off('click', picker.show);
                     picker.component.off('mousedown', picker.stopEvent);
@@ -1282,6 +1305,7 @@ THE SOFTWARE.
         format: false,
         pickDate: true,
         pickTime: true,
+        showPickOnFocus: false,
         useMinutes: true,
         useSeconds: false,
         useCurrent: true,
@@ -1302,3 +1326,4 @@ THE SOFTWARE.
         widgetParent: false
     };
 }));
+
