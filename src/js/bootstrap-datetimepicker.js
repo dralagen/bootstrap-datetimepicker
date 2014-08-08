@@ -799,7 +799,12 @@ THE SOFTWARE.
                         expanded.collapse('hide');
                         closed.collapse('show');
                         $this.find('span').toggleClass(picker.options.icons.time + ' ' + picker.options.icons.date);
-                        picker.element.find('[class^="input-group-"] span').toggleClass(picker.options.icons.time + ' ' + picker.options.icons.date);
+                        var element = picker.element.find('.datepickerbutton span');
+                        console.log(element);
+                        if (element.length == 0) {
+                            element = picker.element.find('[class^="input-group-"] span');
+                        }
+                        element.toggleClass(picker.options.icons.time + ' ' + picker.options.icons.date);
                     }
                 });
             }
