@@ -1,7 +1,7 @@
 {
   "name": "dralagen/bootstrap-datetimepicker",
   "type": "component",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Date/time picker widget based on twitter bootstrap",
   "keywords": [
     "bootstrap",

@@ -1,8 +1,8 @@
 /*
-//! version : 3.0.2
+//! version : 3.0.4
 =========================================================
 bootstrap-datetimepicker.js
-https://github.com/Eonasdan/bootstrap-datetimepicker
+https://github.com/dralagen/bootstrap-datetimepicker
 =========================================================
 The MIT License (MIT)
 
