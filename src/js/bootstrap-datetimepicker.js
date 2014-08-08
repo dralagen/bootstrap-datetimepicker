@@ -142,10 +142,6 @@ THE SOFTWARE.
 
             picker.widget = $(getTemplate()).appendTo(picker.options.widgetParent);
 
-            if (picker.options.useSeconds && !picker.use24hours) {
-                picker.widget.width(300);
-            }
-
             picker.minViewMode = picker.options.minViewMode || 0;
             if (typeof picker.minViewMode === 'string') {
                 switch (picker.minViewMode) {
@@ -174,6 +170,8 @@ THE SOFTWARE.
                         break;
                 }
             }
+
+            picker.viewMode = Math.max(picker.viewMode, picker.minViewMode);
 
             picker.options.disabledDates = indexGivenDates(picker.options.disabledDates);
             picker.options.enabledDates = indexGivenDates(picker.options.enabledDates);
@@ -592,8 +590,8 @@ THE SOFTWARE.
                                     m: picker.date.minutes(),
                                     s: picker.date.seconds()
                                 });
-                                notifyChange(oldDate, e.type);
                                 set();
+                                notifyChange(oldDate, e.type);
                             }
                             showMode(-1);
                             fillDate();
@@ -794,12 +792,15 @@ THE SOFTWARE.
                         expanded.collapse('hide');
                         closed.collapse('show');
                         $this.find('span').toggleClass(picker.options.icons.time + ' ' + picker.options.icons.date);
-                        picker.element.find('[class^="input-group-"] span').toggleClass(picker.options.icons.time + ' ' + picker.options.icons.date);
+                        if (picker.component) {
+                            picker.component.find('span').toggleClass(picker.options.icons.time + ' ' + picker.options.icons.date);
+                        }
                     }
                 });
             }
             if (picker.isInput) {
                 picker.element.on({
+                    'click': $.proxy(picker.show, this),
                     'focus': $.proxy(picker.show, this),
                     'change': $.proxy(change, this),
                     'blur': $.proxy(picker.hide, this)
@@ -836,7 +837,9 @@ THE SOFTWARE.
             if (picker.isInput) {
                 picker.element.off({
                     'focus': picker.show,
-                    'change': picker.change
+                    'change': picker.change,
+                    'click': picker.show,
+                    'blur' : picker.hide
                 });
             } else {
                 picker.element.off({
@@ -972,7 +975,7 @@ THE SOFTWARE.
         getTemplate = function () {
             if (picker.options.pickDate && picker.options.pickTime) {
                 var ret = '';
-                ret = '<div class="bootstrap-datetimepicker-widget' + (picker.options.sideBySide ? ' timepicker-sbs' : '') + ' dropdown-menu" style="z-index:9999 !important;">';
+                ret = '<div class="bootstrap-datetimepicker-widget' + (picker.options.sideBySide ? ' timepicker-sbs' : '') + (picker.use24hours ? ' usetwentyfour' : '') + ' dropdown-menu" style="z-index:9999 !important;">';
                 if (picker.options.sideBySide) {
                     ret += '<div class="row">' +
                        '<div class="col-sm-6 datepicker">' + dpGlobal.template + '</div>' +
@@ -1116,6 +1119,10 @@ THE SOFTWARE.
                     }
                     notifyChange('', e.type);
                 }
+            }
+            // if this is a click event on the input field and picker is already open don't hide it
+            if (e && e.type === 'click' && picker.isInput && picker.widget.hasClass('picker-open')) {
+                return;
             }
             if (picker.widget.hasClass('picker-open')) {
                 picker.widget.hide();
