@@ -8,11 +8,11 @@
   "dependencies": {
     "jquery": ">=1.8.3",
     "bootstrap": ">= 3.0",
-    "moment": ">=2.8.0"
+    "moment": ">=2.8.1"
   },
   "homepage": "https://github.com/dralagen/bootstrap-datetimepicker",
   "authors": [
-    "Eonasdan"
+    "Dralagen"
   ],
   "description": "bootstrap3 datetimepicker",
   "keywords": [

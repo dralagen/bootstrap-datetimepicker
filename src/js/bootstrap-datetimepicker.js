@@ -811,11 +811,11 @@ THE SOFTWARE.
                 });
             } else {
                 if (picker.options.showPickOnFocus) {
-                  picker.element.on({
-                      'focus': $.proxy(picker.show, this),
-                      'change': $.proxy(change, this),
-                      'blur': $.proxy(picker.hide, this)
-                  }, 'input');
+                    picker.element.on({
+                        'focus': $.proxy(picker.show, this),
+                        'change': $.proxy(change, this),
+                        'blur': $.proxy(picker.hide, this)
+                    }, 'input');
                 } else {
                     picker.element.on({
                         'change': $.proxy(change, this)
@@ -1310,3 +1310,4 @@ THE SOFTWARE.
         widgetParent: false
     };
 }));
+
