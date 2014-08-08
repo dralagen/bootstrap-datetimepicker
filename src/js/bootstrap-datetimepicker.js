@@ -801,7 +801,7 @@ THE SOFTWARE.
                         $this.find('span').toggleClass(picker.options.icons.time + ' ' + picker.options.icons.date);
                         var element = picker.element.find('.datepickerbutton span');
                         console.log(element);
-                        if (element.length == 0) {
+                        if (element.length === 0) {
                             element = picker.element.find('[class^="input-group-"] span');
                         }
                         element.toggleClass(picker.options.icons.time + ' ' + picker.options.icons.date);
@@ -849,7 +849,7 @@ THE SOFTWARE.
             picker.widget.off('click', '.datepicker *', picker.click);
             picker.widget.off('click', '[data-action]');
             picker.widget.off('mousedown', picker.stopEvent);
-             picker.element.off('keydown', $.proxy(keydown, this));
+            picker.element.off('keydown', $.proxy(keydown, this));
             if (picker.options.pickDate && picker.options.pickTime) {
                 picker.widget.off('click.togglePicker');
             }
