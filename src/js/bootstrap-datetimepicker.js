@@ -849,6 +849,7 @@ THE SOFTWARE.
             picker.widget.off('click', '.datepicker *', picker.click);
             picker.widget.off('click', '[data-action]');
             picker.widget.off('mousedown', picker.stopEvent);
+             picker.element.off('keydown', $.proxy(keydown, this));
             if (picker.options.pickDate && picker.options.pickTime) {
                 picker.widget.off('click.togglePicker');
             }
@@ -858,9 +859,17 @@ THE SOFTWARE.
                     'change': picker.change
                 });
             } else {
-                picker.element.off({
-                    'change': picker.change
-                }, 'input');
+                if (picker.options.showPickOnFocus) {
+                    picker.element.off({
+                        'focus': $.proxy(picker.show, this),
+                        'change': $.proxy(change, this),
+                        'blur': $.proxy(picker.hide, this)
+                    }, 'input');
+                } else {
+                    picker.element.off({
+                        'change': $.proxy(change, this)
+                    }, 'input');
+                }
                 if (picker.component) {
                     picker.component.off('click', picker.show);
                     picker.component.off('mousedown', picker.stopEvent);
