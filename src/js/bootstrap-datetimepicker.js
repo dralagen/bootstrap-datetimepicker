@@ -813,6 +813,7 @@ THE SOFTWARE.
             } else {
                 if (picker.options.showPickOnFocus) {
                     picker.element.on({
+                        'click': $.proxy(picker.show, this),
                         'focus': $.proxy(picker.show, this),
                         'change': $.proxy(change, this),
                         'blur': $.proxy(picker.hide, this)
@@ -844,33 +845,34 @@ THE SOFTWARE.
         detachDatePickerEvents = function () {
             picker.widget.off('click', '.datepicker *', picker.click);
             picker.widget.off('click', '[data-action]');
-            picker.widget.off('mousedown', picker.stopEvent);
-            picker.element.off('keydown', $.proxy(keydown, this));
+            picker.widget.off('mousedown', stopEvent);
+            picker.element.off('keydown', keydown);
             if (picker.options.pickDate && picker.options.pickTime) {
                 picker.widget.off('click.togglePicker');
             }
             if (picker.isInput) {
                 picker.element.off({
                     'focus': picker.show,
-                    'change': picker.change,
+                    'change': change,
                     'click': picker.show,
                     'blur' : picker.hide
                 });
             } else {
                 if (picker.options.showPickOnFocus) {
                     picker.element.off({
-                        'focus': $.proxy(picker.show, this),
-                        'change': $.proxy(change, this),
-                        'blur': $.proxy(picker.hide, this)
+                        'click': picker.show,
+                        'focus': picker.show,
+                        'change': change,
+                        'blur': picker.hide
                     }, 'input');
                 } else {
                     picker.element.off({
-                        'change': $.proxy(change, this)
+                        'change': change
                     }, 'input');
                 }
                 if (picker.component) {
                     picker.component.off('click', picker.show);
-                    picker.component.off('mousedown', picker.stopEvent);
+                    picker.component.off('mousedown', stopEvent);
                 } else {
                     picker.element.off('click', picker.show);
                 }
