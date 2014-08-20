@@ -287,7 +287,7 @@ THE SOFTWARE.
         },
 
         notifyChange = function (oldDate, eventType) {
-            if (moment(picker.date).isSame(moment(oldDate))) {
+            if ((moment(picker.date).isSame(moment(oldDate)) && !picker.unset) || !moment(oldDate).isValid()) {
                 return;
             }
             picker.element.trigger({
@@ -846,7 +846,6 @@ THE SOFTWARE.
                 if (picker.options.showPickOnFocus) {
                     picker.element.on({
                         'click': $.proxy(picker.show, this),
-                        'focus': $.proxy(picker.show, this),
                         'change': $.proxy(change, this),
                         'blur': $.proxy(picker.hide, this)
                     }, 'input');
@@ -893,7 +892,6 @@ THE SOFTWARE.
                 if (picker.options.showPickOnFocus) {
                     picker.element.off({
                         'click': picker.show,
-                        'focus': picker.show,
                         'change': change,
                         'blur': picker.hide
                     }, 'input');
@@ -1272,7 +1270,7 @@ THE SOFTWARE.
         };
 
         picker.setDate = function (date) {
-            var oldDate = moment(picker.date);
+            var oldDate = (picker.unset) ? null : moment(picker.date);
             if (!date) {
                 picker.setValue(null);
             } else {
