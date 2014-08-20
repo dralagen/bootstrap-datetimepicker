@@ -794,6 +794,7 @@ THE SOFTWARE.
             }
             else {
                 picker.viewDate = oldDate;
+                oldDate = (picker.unset) ? null : oldDate;
                 picker.unset = true;
                 notifyChange(oldDate, e.type);
                 notifyError(newDate);
