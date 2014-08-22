@@ -1,5 +1,5 @@
 /*
-//! version : 3.1.0
+//! version : 3.1.1
 =========================================================
 bootstrap-datetimepicker.js
 https://github.com/dralagen/bootstrap-datetimepicker
@@ -947,28 +947,36 @@ THE SOFTWARE.
 
         checkDate = function (direction, unit, amount) {
             moment.locale(picker.options.language);
-            var newDate;
+            var newDate = moment(picker.date),
+                maxDate = moment(picker.options.maxDate, picker.format, picker.options.useStrict),
+                minDate = moment(picker.options.minDate, picker.format, picker.options.useStrict);
+
             if (direction === 'add') {
-                newDate = moment(picker.date);
-                if (newDate.hours() === 23) {
-                    newDate.add(amount, unit);
-                }
                 newDate.add(amount, unit);
             }
             else {
-                newDate = moment(picker.date).subtract(amount, unit);
+                newDate.subtract(amount, unit);
             }
-            if (isInDisableDates(moment(newDate.subtract(amount, unit))) || isInDisableDates(newDate)) {
-                notifyError(newDate.format(picker.format));
-                return;
+            if (isInDisableDates(newDate, unit)) {
+                if (picker.options.autoCorrectDate) {
+                    if (unit) {
+                        maxDate = maxDate.endOf(unit);
+                        minDate = minDate.startOf(unit);
+                    }
+                    if (newDate.isAfter(maxDate)) {
+                        newDate = maxDate;
+                    }
+                    else if (newDate.isBefore(minDate)) {
+                        newDate = minDate;
+                    }
+                } else {
+                    notifyError(newDate.format(picker.format));
+                    return;
+                }
             }
 
-            if (direction === 'add') {
-                picker.date.add(amount, unit);
-            }
-            else {
-                picker.date.subtract(amount, unit);
-            }
+            picker.date = moment(newDate);
+
             picker.unset = false;
         },
 
@@ -1345,6 +1353,7 @@ THE SOFTWARE.
         minuteStepping: 1,
         minDate: moment({y: 1900}),
         maxDate: moment().add(100, 'y'),
+        autoCorrectDate: true,
         showToday: true,
         collapse: true,
         language: 'en',
