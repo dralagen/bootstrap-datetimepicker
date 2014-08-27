@@ -967,10 +967,6 @@ THE SOFTWARE.
             }
             if (isInDisableDates(newDate, unit) || !isInEnableDates(newDate)) {
                 if (picker.options.autoCorrectDate) {
-                    if (unit) {
-                        maxDate = maxDate.endOf(unit);
-                        minDate = minDate.startOf(unit);
-                    }
                     if (newDate.isAfter(maxDate)) {
                         newDate = maxDate;
                     }
