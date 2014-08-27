@@ -1,5 +1,5 @@
 /*
-//! version : 3.1.1
+//! version : 3.1.2
 =========================================================
 bootstrap-datetimepicker.js
 https://github.com/dralagen/bootstrap-datetimepicker
@@ -553,7 +553,11 @@ THE SOFTWARE.
             tableHours.find('.disabled').removeClass('disabled');
             tableHours.find('td').each(function () {
                 newDate.hours(parseInt($(this).text(), 10));
-                if (isInDisableDates(newDate)) {
+                if (!picker.use24hours && picker.date.hour() > 12) {
+                    newDate.add(12, 'hour');
+                }
+
+                if (isInDisableDates(newDate) || !isInEnableDates(newDate)) {
                     $(this).addClass('disabled');
                 }
             });
@@ -564,7 +568,7 @@ THE SOFTWARE.
             tableMinutes.find('.disabled').removeClass('disabled');
             tableMinutes.find('td').each(function () {
                 newDate.minutes(parseInt($(this).text(), 10));
-                if (isInDisableDates(newDate)) {
+                if (isInDisableDates(newDate) || !isInEnableDates(newDate)) {
                     $(this).addClass('disabled');
                 }
             });
@@ -685,13 +689,17 @@ THE SOFTWARE.
             },
 
             togglePeriod: function () {
-                var hour = picker.date.hours();
+                var newDate = moment(picker.date),
+                       hour = picker.date.hours();
                 if (hour >= 12) {
                     hour -= 12;
                 } else {
                     hour += 12;
                 }
-                picker.date.hours(hour);
+                newDate.hours(hour);
+                if (!isInDisableDates(newDate) && isInEnableDates(newDate)) {
+                    picker.date.hours(hour);
+                }
             },
 
             showPicker: function () {
@@ -728,7 +736,7 @@ THE SOFTWARE.
                     }
                 }
                 newDate.hours(hour);
-                if (!isInDisableDates(newDate)) {
+                if (!isInDisableDates(newDate) && isInEnableDates(newDate)) {
                     picker.date.hours(hour);
                 }
                 actions.showPicker.call(picker);
@@ -737,7 +745,7 @@ THE SOFTWARE.
             selectMinute: function (e) {
                 var newDate = moment(picker.date);
                 newDate.minutes(parseInt($(e.target).text(), 10));
-                if (!isInDisableDates(newDate)) {
+                if (!isInDisableDates(newDate) && isInEnableDates(newDate)) {
                     picker.date.minutes(parseInt($(e.target).text(), 10));
                 }
                 actions.showPicker.call(picker);
@@ -746,7 +754,7 @@ THE SOFTWARE.
             selectSecond: function (e) {
                 var newDate = moment(picker.date);
                 newDate.seconds(parseInt($(e.target).text(), 10));
-                if (!isInDisableDates(newDate)) {
+                if (!isInDisableDates(newDate) && isInEnableDates(newDate)) {
                     picker.date.seconds(parseInt($(e.target).text(), 10));
                 }
                 actions.showPicker.call(picker);
@@ -957,7 +965,7 @@ THE SOFTWARE.
             else {
                 newDate.subtract(amount, unit);
             }
-            if (isInDisableDates(newDate, unit)) {
+            if (isInDisableDates(newDate, unit) || !isInEnableDates(newDate)) {
                 if (picker.options.autoCorrectDate) {
                     if (unit) {
                         maxDate = maxDate.endOf(unit);
